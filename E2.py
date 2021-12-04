@@ -48,7 +48,7 @@ if(seleccion == 'activos'):
     st.pyplot(fig)
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 activos en el rango de fechas seleccionado")
-    st.table(filtro.set_index('fecha_primeros_sintomas'))
+    st.table(filtro)
 
 elif((seleccion == 'recuperados')):
     filtro.drop(['activos'], axis=1, inplace=True)
