@@ -60,7 +60,7 @@ elif((seleccion == 'recuperados')):
     st.pyplot(fig)
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 recuperados en el rango de fechas seleccionado")
-
+    st.table(filtro)
 
 elif((seleccion == 'activos y recuperados')):
     to_plot1 = filtro.recuperados
@@ -77,6 +77,7 @@ elif((seleccion == 'activos y recuperados')):
     st.pyplot(fig)
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 activos vs los recuperados en el rango de fechas seleccionado")
+    st.table(filtro)
 
 
 
