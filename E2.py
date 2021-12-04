@@ -79,4 +79,4 @@ elif((seleccion == 'activos y recuperados')):
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 activos vs los recuperados en el rango de fechas seleccionado")
 
 
-st.table(filtro)
+
