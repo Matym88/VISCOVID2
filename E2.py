@@ -55,7 +55,7 @@ if(seleccion == 'activos'):
     covid.drop(['recuperados'], inplace=True)
     to_plot1 = covid.iloc[:,
                           index_of_primera_fecha:index_of_ultima_fecha+1]
-    st.dataframe(to_plot1.head(10))
+    st.dataframe(to_plot1)
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 activos en el rango de fechas seleccionado")
     fig, ax = plt.subplots()
@@ -73,7 +73,7 @@ elif((seleccion == 'recuperados')):
     covid.drop(['activos'], inplace=True)
     to_plot2 = covid.iloc[:,
                           index_of_primera_fecha:index_of_ultima_fecha+1]
-    st.dataframe(to_plot2.head(10))
+    st.dataframe(to_plot2)
 
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 recuperados en el rango de fechas seleccionado")
@@ -100,7 +100,3 @@ elif((seleccion == 'activos y recuperados')):
     xs = np.arange(0, index_of_ultima_fecha-index_of_primera_fecha+1, 15)
     plt.xticks(xs, rotation=90)
     st.pyplot(fig)
-
-    # st.table(fechas)
-
-# st.table(filtro)
