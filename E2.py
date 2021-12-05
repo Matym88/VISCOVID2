@@ -1,12 +1,10 @@
 # importar las librerias
-from altair.vegalite.v4.api import value
-from numpy.core.fromnumeric import shape
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-
+from datetime import datetime
 sns.set_style("darkgrid")
 
 st.title("Comparador de casos COVID Activos vs Recuperados")
@@ -17,8 +15,12 @@ st.markdown("#### Está página fue diseñada con el fin de dar a conocer los ca
 df = pd.read_csv(
     "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto46/activos_vs_recuperados.csv")
 
+df.set_index('fecha_primeros_sintomas', inplace=True)
+covid = df.T
 
-st.dataframe(df.head(10))
+
+st.dataframe(covid.head(10))
+
 seleccion = st.radio("Selecione categoría", ('activos',
                      'recuperados', 'activos y recuperados'))
 if(seleccion == 'activos'):
@@ -29,55 +31,74 @@ elif(seleccion == 'activos y recuperados'):
     st.success('Activos y recuperados')
 
 
-cantidad_columnas = len(df.index)
-
-x, y = st.slider('Elegir rango de fechas a graficar:',
-                 value=[1, cantidad_columnas])
-filtro = pd.DataFrame(df.iloc[x:y+1])
+primerafecha = datetime.strptime(covid.columns[15], '%Y-%m-%d')
 
 
+ultimafecha = datetime.strptime(covid.columns[-1], '%Y-%m-%d')
+
+
+start_time = st.slider("Seleccione las fechas: ", value=[
+                       primerafecha, ultimafecha], format="YYYY-MM-DD")
+
+
+index_of_primera_fecha = covid.columns.get_loc(
+    start_time[0].strftime('%Y-%m-%d'))
+
+
+index_of_ultima_fecha = covid.columns.get_loc(
+    start_time[1].strftime('%Y-%m-%d'))
+
+
+to_plot = covid.iloc[:,
+                     index_of_primera_fecha:index_of_ultima_fecha+1]
 if(seleccion == 'activos'):
-    filtro.drop(['recuperados'], axis=1, inplace=True)
-    fig, ax = plt.subplots()
-    to_plot = filtro.iloc[:, 1:]
-    ax.plot(to_plot)
-    ax.set_title('Grafico de pacientes activos')
-    ax.set_xlabel('Rango de fechas')
-    ax.set_ylabel('Cantidad de pacientes recuperados')
-
-    st.pyplot(fig)
+    covid.drop(['recuperados'], inplace=True)
+    to_plot1 = covid.iloc[:,
+                          index_of_primera_fecha:index_of_ultima_fecha+1]
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 activos en el rango de fechas seleccionado")
-    st.table(filtro)
+    fig, ax = plt.subplots()
+    ax.plot(to_plot1.T)
+    ax.set_title('Grafico de pacientes activos')
+    ax.set_xlabel('fechas')
+    ax.set_ylabel('Cantidad de pacientes activos')
+    xs = np.arange(0, index_of_ultima_fecha-index_of_primera_fecha+1, 15)
+    plt.xticks(xs, rotation=90)
+    st.pyplot(fig)
+
+    # st.table(fechas)
 
 elif((seleccion == 'recuperados')):
-    filtro.drop(['activos'], axis=1, inplace=True)
-    fig, ax = plt.subplots()
-    to_plot = filtro.iloc[:, 1:]
-    ax.plot(to_plot)
-    ax.set_xlabel('Rango de Fechas')
-    ax.set_ylabel('Cantidad de pacientes recuperados')
-    st.pyplot(fig)
+    covid.drop(['activos'], inplace=True)
+    to_plot2 = covid.iloc[:,
+                          index_of_primera_fecha:index_of_ultima_fecha+1]
+
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 recuperados en el rango de fechas seleccionado")
-    st.table(filtro)
+    fig, ax = plt.subplots()
+    ax.plot(to_plot2.T)
+    ax.set_title('Grafico de pacientes recuperados')
+    ax.set_xlabel('fechas')
+    ax.set_ylabel('Cantidad de pacientes recuperados')
+    xs = np.arange(0, index_of_ultima_fecha-index_of_primera_fecha+1, 15)
+    plt.xticks(xs, rotation=90)
+    st.pyplot(fig)
+    # st.table(fechas)
 
 elif((seleccion == 'activos y recuperados')):
-    to_plot1 = filtro.recuperados
-    to_plot2 = filtro.activos
-
-    fig, ax = plt.subplots()
-    to_plot = filtro.iloc[:, 1:]
-    ax.scatter(to_plot1, to_plot2)
-    ax.set_title(
-        'Grafico comparativo pacientes recuperados vs pacientes activos')
-    ax.set_xlabel('Cantidad de pacientes activos')
-    ax.set_ylabel('Cantidad de pacientes recuperados')
-
-    st.pyplot(fig)
+    covid.iloc[:,
+               index_of_primera_fecha:index_of_ultima_fecha+1]
     st.markdown(
         "## En este grafico podemos observar la cantidad de pacientes COVID-19 activos vs los recuperados en el rango de fechas seleccionado")
-    st.table(filtro)
+    fig, ax = plt.subplots()
+    ax.plot(to_plot.T)
+    ax.set_title('Grafico de pacientes activos vs recuperados')
+    ax.set_xlabel('fechas')
+    ax.set_ylabel('Cantidad de pacientes recuperados')
+    xs = np.arange(0, index_of_ultima_fecha-index_of_primera_fecha+1, 15)
+    plt.xticks(xs, rotation=90)
+    st.pyplot(fig)
 
+    # st.table(fechas)
 
-
+# st.table(filtro)
